@@ -1,9 +1,15 @@
 package com.akdev.leetcode;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -29,7 +35,9 @@ public final class App {
         // String[] arr = {"asdf", "as"};
         // System.out.println(longestCommonPrefixA1(arr));
 
-        System.out.println(isValid("([}}])"));
+        // System.out.println(isValid("([}}])"));
+
+        System.out.println(removeDuplicates(new int[] {1}));
     }
 
 
@@ -155,8 +163,6 @@ public final class App {
     }
 
     public static boolean isValid(String s) {
-        if (s.length() % 2 != 0)
-            return false;
         Stack<Character> stk = new Stack<>();
 
         for (char a : s.toCharArray()) {
@@ -168,10 +174,117 @@ public final class App {
                 stk.pop();
             } else if (a == ']' && !stk.isEmpty() && stk.peek() == '[') {
                 stk.pop();
+            } else {
+                return false;
             }
         }
-        if (stk.isEmpty())
-            return true;
-        return false;
+
+        return stk.isEmpty();
+    }
+
+    public static boolean isValidCSOL(String s) {
+
+        Stack<Character> stack = new Stack<Character>();
+        HashMap<Character, Character> complement = new HashMap<Character, Character>();
+
+        complement.put(')', '(');
+        complement.put(']', '[');
+        complement.put('}', '{');
+
+        for (Character c : s.toCharArray()) {
+            switch (c) {
+                case '(':
+                case '{':
+                case '[':
+                    stack.push(c);
+                    break;
+                case ')':
+                case '}':
+                case ']':
+                    if (stack.isEmpty() || stack.pop() != complement.get(c)) {
+                        return false;
+                    }
+            }
+        }
+
+        return stack.isEmpty();
+    }
+
+
+    public static ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode preHead = new ListNode(0);
+        ListNode currNode = preHead;
+
+
+        while (list1.next != null && list2.next != null) {
+            if (list1.val <= list2.val) {
+                currNode.next = list1;
+                list1 = list1.next;
+
+            } else if (list1.val > list2.val) {
+                currNode.next = list2;
+                list2 = list2.next;
+            }
+            currNode = currNode.next;
+        }
+
+        currNode.next = list1 == null ? list1 : list2;
+        return preHead.next;
+
+    }
+
+    public ListNode mergeTwoListsCSOL(ListNode l1, ListNode l2) {
+        ListNode prehead = new ListNode(-1);
+        ListNode cur = prehead;
+
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                cur.next = l1;
+                l1 = l1.next;
+            } else {
+                cur.next = l2;
+                l2 = l2.next;
+            }
+            cur = cur.next;
+        }
+
+        cur.next = l1 == null ? l2 : l1;
+        return prehead.next;
+    }
+
+    public static int removeDuplicates(int[] nums) {
+        HashSet<Integer> s1 = new HashSet<>();
+        int preNum = nums[0];
+        int index = 0;
+        for (int i = 1; i < nums.length; i++) {
+            s1.add(nums[i]);
+            if (nums[i] > preNum) {
+                nums[++index] = nums[i];
+            }
+            preNum = nums[i];
+        }
+        for (int i : nums) {
+            System.out.println(i);
+        }
+        return s1.size();
+    }
+
+    
+}
+
+
+class ListNode {
+    int val;
+    ListNode next;
+
+    ListNode() {}
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
     }
 }
